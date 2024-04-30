@@ -1,0 +1,21 @@
+[gd_scene load_steps=5 format=3 uid="uid://dlu147ene025i"]
+
+[ext_resource type="Texture2D" uid="uid://xy32su46idke" path="res://Floor/FloorTIles.png" id="1_8s3q6"]
+[ext_resource type="Script" path="res://Floor/FloorGeneration.gd" id="1_hqr14"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_c8pfn"]
+texture = ExtResource("1_8s3q6")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_ej8nw"]
+tile_size = Vector2i(32, 32)
+sources/0 = SubResource("TileSetAtlasSource_c8pfn")
+
+[node name="FloorGeneration" type="TileMap"]
+tile_set = SubResource("TileSet_ej8nw")
+rendering_quadrant_size = 32
+format = 2
+script = ExtResource("1_hqr14")

@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://dr78p6t0v7p1f"]
+
+[ext_resource type="PackedScene" uid="uid://dlu147ene025i" path="res://Floor/FloorGeneration.tscn" id="1_16whx"]
+[ext_resource type="PackedScene" uid="uid://17j6a7stnbu6" path="res://character_body_2d.tscn" id="2_0ef6t"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="FloorGeneration" parent="." instance=ExtResource("1_16whx")]
+
+[node name="CharacterBody2D" parent="." instance=ExtResource("2_0ef6t")]
