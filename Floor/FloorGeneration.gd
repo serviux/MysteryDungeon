@@ -6,7 +6,8 @@ var  floor_map = FastNoiseLite.new()
 @export var world_starting_pos: Vector2i
 @export var tileTyper:determineTileType
 
-
+var starting_point: Marker2D
+var end_point: Marker2D
 
 
 func _ready():
