@@ -10,14 +10,21 @@ var starting_point: Marker2D
 var end_point: Marker2D
 
 
+
 func _ready():
 	floor_map.seed = randi()
 	generate_floor()
 
-
+func randomize_start():
+	starting_point.position.x = randi_range(0,100)
+	starting_point.position.y = randi_range(0,100)
+	
+func radomize_end():
+	end_point.position.x = randi_range(0,100)
+	end_point.position.y = randi_range(0,100)
 
 func _process(delta):
-	pass
+	generate_floor()
 
 func generate_floor():
 	#converts global position to tile map position
@@ -29,6 +36,11 @@ func generate_floor():
 			
 			var coords = Vector2i(start_pos.x + x, start_pos.y + y)
 			set_cell(0, coords, 0, tile_type)
+	
+	
+	
+
+
 			
 
 
