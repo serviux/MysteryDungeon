@@ -87,7 +87,7 @@ func get_surrounding_tiles_count(map_x:int, map_y:int):
 	
 
 func count_surrounding_tiles(map_x:int, map_y:int, neighbor_x:int, neighbor_y:int, wall_count:int):
-	if (neighbor_x > map_x +1) and (neighbor_y >  map_y + 1) : 
+	if (neighbor_x > map_x +1) or (neighbor_y >  map_y + 1) : 
 		return wall_count
 	
 	if( neighbor_x > 0 and neighbor_x < width and 
