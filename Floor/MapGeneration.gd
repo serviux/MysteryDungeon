@@ -15,6 +15,7 @@ var map = []
 var pseudo_random
 
 
+
 ##sets the seed for the pseudo-random number generator by getting a hashing the current system time or the provided seed string from user
 func _ready():
 	pseudo_random = RandomNumberGenerator.new()
@@ -70,13 +71,16 @@ func _fill_tiles():
 
 
 func smooth_map():
-	for x in range(len(map)):
-		for y in range(len(map[x])):
+	var map_copy = map.duplicate(true)
+	for x in range(len(map_copy)):
+		for y in range(len(map_copy[x])):
 			var neighbor_tiles = get_surrounding_tiles_count(x,y)
 			if(neighbor_tiles > 4):
-				map[x][y] = 1
+				map_copy[x][y] = 1
 			elif(neighbor_tiles < 4):
-				map[x][y] = 0
+				map_copy[x][y] = 0
+	
+	map = map_copy
 			
 
 			
