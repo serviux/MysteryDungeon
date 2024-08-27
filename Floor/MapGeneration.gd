@@ -3,8 +3,8 @@ extends TileMap
 @export var width:int
 @export var height:int
 
-@export var fill_percent:int = 80
-@export var smooth_iterations:int = 1
+@export var fill_percent:int = 50
+@export var smooth_iterations:int = 5
 @export var map_seed:String
 @export var use_random_seed:bool = true;
 
@@ -82,15 +82,18 @@ func smooth_map():
 			
 func get_surrounding_tiles_count(map_x:int, map_y:int) -> int: 
 	var wall_count = 0
-
-	for neighbor_x in range(map_x - 1, map_x + 1): 
-		for neighbor_y in range(map_y - 1, map_y + 1):
-			if( neighbor_x != map_x and neighbor_x < width and 
-				neighbor_y != map_y and neighbor_y < height):
+	
+	#range goes from start to n-1, therefore, to get the tiles that are greater than the center
+	#we need to add +2 so we look at them in the loop
+	for neighbor_x in range(map_x - 1, map_x + 2): 
+		for neighbor_y in range(map_y - 1, map_y + 2):
+			
+			if( neighbor_x >= 0 and neighbor_x < width and 
+				neighbor_y >= 0 and neighbor_y < height):
 					if(neighbor_x != map_x or neighbor_y != map_y):
 						wall_count += map[neighbor_x][neighbor_y]
-					else:
-						wall_count += 1
+			else:
+				wall_count += 1
 	return wall_count
 	
 
