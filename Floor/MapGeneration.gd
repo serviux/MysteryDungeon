@@ -100,4 +100,3 @@ func get_surrounding_tiles_count(map_x:int, map_y:int) -> int:
 				wall_count += 1
 	return wall_count
 	
-

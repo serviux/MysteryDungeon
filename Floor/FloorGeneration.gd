@@ -42,5 +42,3 @@ func generate_floor():
 
 
 			
-
-
