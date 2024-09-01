@@ -11,6 +11,7 @@ extends TileMap
 
 
 @onready var CONSTANTS = %CONSTANTS
+var mesh_generator
 var map = []
 var pseudo_random
 
@@ -30,7 +31,7 @@ func _ready():
 		print("converting input seed value %s to integer %s" % [map_seed, seed_value])
 		pseudo_random.seed = seed_value
 		
-	
+	mesh_generator = get_node("MeshGenerator")
 	generate_map()
 
 
@@ -40,7 +41,8 @@ func generate_map():
 	
 	for x in smooth_iterations:
 		smooth_map()
-		
+	
+	mesh_generator.generate_mesh(map, 1)
 	_fill_tiles()
 	
 	

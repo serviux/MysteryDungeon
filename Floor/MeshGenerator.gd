@@ -50,4 +50,36 @@ class Square:
 
 class SquareGrid:
 	var squares
+	
+	func _init(map, square_size:float):
+		var node_count_x = len(map)
+		var node_count_y = len(map[0])
+		
+		var map_width = node_count_x * square_size
+		var map_height = node_count_y * square_size
+		
+		var control_nodes = []
+		
+		for x in node_count_x:
+			control_nodes.append([])
+			for y in node_count_y:
+				var pos = Vector3(-map_width/2 + x * square_size + square_size/2,
+							  0,
+							  -map_height/2 + y * square_size + square_size/2)
+				control_nodes[x][y] = ControlMeshNode.new(pos, map[x][y] == 1, square_size)
+		
+		squares = [] 
+		for x in node_count_x:
+			squares.append([])
+			for y in node_count_y:
+				squares[x][y] = Square.new(control_nodes[x][y+1],
+										  control_nodes[x+1][y+1],
+										  control_nodes[x+1][y],
+										  control_nodes[x][y])
+
+
+var square_grid:SquareGrid
+
+func generate_mesh(map, square_size:float):
+	square_grid = SquareGrid.new(map, square_size)
 #endregion
