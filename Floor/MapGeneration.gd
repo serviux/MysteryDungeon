@@ -42,7 +42,7 @@ func generate_map():
 	for x in smooth_iterations:
 		smooth_map()
 	
-	mesh_generator.generate_mesh(map, 1)
+	#mesh_generator.generate_mesh(map, 1)
 	_fill_tiles()
 	
 	
