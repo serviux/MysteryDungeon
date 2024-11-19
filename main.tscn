@@ -19,5 +19,6 @@ fill_percent = 50
 smooth_iterations = 5
 map_seed = "Awesome"
 use_random_seed = true
+end_pos = Vector2i(0, 0)
 
 [node name="CharacterBody2D" parent="." instance=ExtResource("2_0ef6t")]

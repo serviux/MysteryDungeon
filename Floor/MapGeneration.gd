@@ -7,7 +7,7 @@ extends TileMap
 @export var smooth_iterations:int = 5
 @export var map_seed:String
 @export var use_random_seed:bool = true;
-
+@export var end_pos:Vector2i 
 
 
 @onready var CONSTANTS = %CONSTANTS
@@ -44,6 +44,9 @@ func generate_map():
 	
 	#mesh_generator.generate_mesh(map, 1)
 	_fill_tiles()
+	_set_end_point()
+	
+	#set stairs to next floor
 	
 	
 		
@@ -70,6 +73,22 @@ func _fill_tiles():
 				
 			var coords = Vector2i(x,y)
 			set_cell(0, coords, 0, tile_type )
+
+
+func _set_end_point():
+	print("setting end point to.....")
+	end_pos.x = randi_range(0,100)
+	end_pos.y = randi_range(0,100)
+	
+	while map[end_pos.x][end_pos.y] != 0:
+		end_pos.x = randi_range(0,100)
+		end_pos.y = randi_range(0,100)
+	
+	print("Endpoint(x: %s, y: %s)" %[end_pos.x, end_pos.y])
+	set_cell(0, end_pos,0, CONSTANTS.STAIRS)
+	
+	
+	
 
 
 func smooth_map():
