@@ -1,20 +1,30 @@
-extends TileMap
+class_name Map
+extends TileMapLayer
 
 @export var width:int
 @export var height:int
 
-@export var fill_percent:int = 50
+@export var fill_percent:int = 60
 @export var smooth_iterations:int = 5
 @export var map_seed:String
 @export var use_random_seed:bool = true;
 @export var end_pos:Vector2i 
+@export var start_pos:Vector2i
 
+@export var map_max:Vector2i = Vector2i(100,100)
 
-@onready var CONSTANTS = %CONSTANTS
+@onready var CONSTANTS:GameConstants = %CONSTANTS
 var mesh_generator
 var map = []
 var pseudo_random
 
+var spawnable_coords_x = {}
+var spawnable_coords_y = {}
+var player:Player
+
+
+
+signal start_point_set(start_position:Vector2i)
 
 
 ##sets the seed for the pseudo-random number generator by getting a hashing the current system time or the provided seed string from user
@@ -30,26 +40,27 @@ func _ready():
 		var seed_value = hash(map_seed)
 		print("converting input seed value %s to integer %s" % [map_seed, seed_value])
 		pseudo_random.seed = seed_value
-		
-	mesh_generator = get_node("MeshGenerator")
+	player = get_node("%Player")
+	start_point_set.connect(player._on_start_point_set)
 	generate_map()
 
 
 func generate_map():
+
 	_random_fill()
 	
 	
 	for x in smooth_iterations:
 		smooth_map()
 	
-	#mesh_generator.generate_mesh(map, 1)
 	_fill_tiles()
-	_set_end_point()
 	
 	#set stairs to next floor
+	_set_end_point()
 	
 	
-		
+	set_start_point()
+	
 		
 func _random_fill():      
 	for x in width:
@@ -62,6 +73,7 @@ func _random_fill():
 
 
 func _fill_tiles():
+	var start_pos = local_to_map(Vector2.ZERO)
 	for x in width:
 		for y in height:
 			var tile_idx = map[x][y]
@@ -71,23 +83,47 @@ func _fill_tiles():
 			elif(tile_idx == 1):
 				tile_type = CONSTANTS.WALL
 				
-			var coords = Vector2i(x,y)
+			var coords = Vector2i(start_pos.x + x, start_pos.y + y)
+			set_cell()
 			set_cell(0, coords, 0, tile_type )
 
 
 func _set_end_point():
 	print("setting end point to.....")
-	end_pos.x = randi_range(0,100)
-	end_pos.y = randi_range(0,100)
-	
+	end_pos.x = randi_range(0,map_max.x -1)
+	end_pos.y = randi_range(0,map_max.y -1)
+
 	while map[end_pos.x][end_pos.y] != 0:
-		end_pos.x = randi_range(0,100)
-		end_pos.y = randi_range(0,100)
+		end_pos.x = randi_range(0,map_max.x -1)
+		end_pos.y = randi_range(0,map_max.y -1)
 	
 	print("Endpoint(x: %s, y: %s)" %[end_pos.x, end_pos.y])
 	set_cell(0, end_pos,0, CONSTANTS.STAIRS)
 	
+
+func set_start_point(forced_position:Vector2i = Vector2i(-1,-1)):
+	print("setting start point to.....")
+	start_pos.x = randi_range(0,map_max.x -1)
+	start_pos.y = randi_range(0,map_max.y -1)
 	
+	if forced_position > Vector2i.ZERO:
+		print("setting forced position: x: %s, y: %s" %[forced_position.x, forced_position.y])
+		start_pos = forced_position
+		start_point_set.emit(start_pos)
+		return
+	
+	while map[start_pos.x][start_pos.y] != 0 or start_pos == end_pos:
+		start_pos.x = randi_range(0,map_max.x -1)
+		start_pos.y = randi_range(0,map_max.y -1)
+	
+	var world_pos = map_to_local(start_pos)
+	print("Map Startpoint(x: %s, y: %s) World Startpoint (x: %s, y: %s)" %[start_pos.x, start_pos.y, world_pos.x, world_pos.y])
+	start_point_set.emit(world_pos)
+
+func _get_random_point(): 
+	var random_point = Vector2i(-1,-1)
+	
+	map.pick_random()
 	
 
 
@@ -121,3 +157,16 @@ func get_surrounding_tiles_count(map_x:int, map_y:int) -> int:
 				wall_count += 1
 	return wall_count
 	
+
+func get_entity_position(world_position:Vector2):
+	"""Gets the position of an entity in terms of map coordinates
+	world_position - the position of the entity in the world 
+	returns -   Vector2i coordinates of map position"""
+	return local_to_map(world_position)
+
+
+func get_world_position(map_position:Vector2i):
+	"""Gets the position of an entity in terms of global coordinates
+	map_position - Vector2i coordinates of map position" 
+	returns -   the position of the entity in the world"""
+	return map_to_local(map_position)

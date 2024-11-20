@@ -1,22 +1,20 @@
-[gd_scene load_steps=5 format=3 uid="uid://dlu147ene025i"]
+[gd_scene load_steps=3 format=3 uid="uid://dlu147ene025i"]
 
-[ext_resource type="Texture2D" uid="uid://xy32su46idke" path="res://Floor/FloorTIles.png" id="1_8s3q6"]
-[ext_resource type="Script" path="res://Floor/FloorGeneration.gd" id="1_hqr14"]
+[ext_resource type="Script" path="res://Floor/MapGeneration.gd" id="1_5vv56"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_c8pfn"]
-texture = ExtResource("1_8s3q6")
-texture_region_size = Vector2i(32, 32)
-0:0/0 = 0
-1:0/0 = 0
-2:0/0 = 0
-0:1/0 = 0
+[sub_resource type="TileSet" id="TileSet_2l5bv"]
+resource_local_to_scene = true
+script = ExtResource("1_5vv56")
+width = 0
+height = 0
+fill_percent = 60
+smooth_iterations = 5
+map_seed = ""
+use_random_seed = true
+end_pos = Vector2i(0, 0)
+start_pos = Vector2i(0, 0)
+map_max = Vector2i(100, 100)
 
-[sub_resource type="TileSet" id="TileSet_ej8nw"]
-tile_size = Vector2i(32, 32)
-sources/0 = SubResource("TileSetAtlasSource_c8pfn")
-
-[node name="FloorGeneration" type="TileMap"]
-tile_set = SubResource("TileSet_ej8nw")
-rendering_quadrant_size = 32
+[node name="TileMap" type="TileMap"]
+tile_set = SubResource("TileSet_2l5bv")
 format = 2
-script = ExtResource("1_hqr14")
