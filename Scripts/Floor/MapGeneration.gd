@@ -2,7 +2,7 @@ class_name Map
 extends Node
 
 
-const DEFAULT_FLOOR = preload("res://Floor/FloorScene.tscn")
+const DEFAULT_FLOOR = preload("res://Scenes/Floor/FloorScene.tscn")
 @export var width:int
 @export var height:int
 

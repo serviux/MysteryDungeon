@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://dr78p6t0v7p1f"]
 
-[ext_resource type="PackedScene" uid="uid://6prh0w1xa0cg" path="res://constants.tscn" id="1_12y3w"]
-[ext_resource type="PackedScene" uid="uid://17j6a7stnbu6" path="res://character_body_2d.tscn" id="2_0ef6t"]
-[ext_resource type="Script" path="res://Floor/MapGeneration.gd" id="4_cd8rq"]
+[ext_resource type="PackedScene" uid="uid://6prh0w1xa0cg" path="res://Scenes/constants.tscn" id="1_12y3w"]
+[ext_resource type="PackedScene" uid="uid://17j6a7stnbu6" path="res://Scenes/Player/character_body_2d.tscn" id="2_0ef6t"]
+[ext_resource type="Script" path="res://Scripts/Floor/MapGeneration.gd" id="4_cd8rq"]
 
 [node name="Node2D" type="Node2D"]
 
