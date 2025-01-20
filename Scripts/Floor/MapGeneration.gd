@@ -111,7 +111,7 @@ func _set_end_point():
 	print("Endpoint(x: %s, y: %s)" %[end_pos.x, end_pos.y])
 	
 	var ground_layer = layers[CONSTANTS.TILE_IDX.GROUND]
-	ground_layer.set_cell(0, end_pos,0, CONSTANTS.STAIRS)
+	ground_layer.set_cell(end_pos,0, CONSTANTS.STAIRS, 0)
 	
 
 func set_start_point(forced_position:Vector2i = Vector2i(-1,-1)):
