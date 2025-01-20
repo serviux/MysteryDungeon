@@ -93,11 +93,11 @@ func _fill_tiles():
 			
 			match tile_type:
 				CONSTANTS.GROUND:
-					layers[CONSTANTS.TILE_IDX.GROUND].set_cell(0,coords,0,tile_type)
+					layers[CONSTANTS.TILE_IDX.GROUND].set_cell(coords,0,tile_type,0)
 				CONSTANTS.WALL:
-					layers[CONSTANTS.TILE_IDX.WALL].set_cell(0,coords,0,tile_type)
+					layers[CONSTANTS.TILE_IDX.WALL].set_cell(coords,0,tile_type,0)
 				CONSTANTS.FLUID:
-					layers[CONSTANTS.TILE_IDX.FLUID].set_cell(0,coords,0,tile_type)
+					layers[CONSTANTS.TILE_IDX.FLUID].set_cell(coords,0,tile_type,0)
 
 func _set_end_point():
 	print("setting end point to.....")

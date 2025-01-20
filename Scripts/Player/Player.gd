@@ -8,8 +8,7 @@ var map_generator:Map
 signal move(Direction)
 
 func _ready() -> void:
-	map_generator  = get_node("%MapGen")
-
+	pass
 
 
 func _physics_process(delta):

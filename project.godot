@@ -19,6 +19,10 @@ config/icon="res://Assets/icon.svg"
 
 Constants="*res://Scenes/constants.tscn"
 
+[display]
+
+window/size/always_on_top=true
+
 [input]
 
 move_up={
