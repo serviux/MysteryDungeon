@@ -1,16 +1,13 @@
-[gd_scene load_steps=5 format=3 uid="uid://dr78p6t0v7p1f"]
+[gd_scene load_steps=4 format=3 uid="uid://dr78p6t0v7p1f"]
 
 [ext_resource type="PackedScene" uid="uid://6prh0w1xa0cg" path="res://constants.tscn" id="1_12y3w"]
 [ext_resource type="PackedScene" uid="uid://17j6a7stnbu6" path="res://character_body_2d.tscn" id="2_0ef6t"]
-[ext_resource type="PackedScene" uid="uid://c7dyijufflf32" path="res://Floor/FloorMapConfigurations/CaveTileTyper.tscn" id="2_hlvmc"]
 [ext_resource type="Script" path="res://Floor/MapGeneration.gd" id="4_cd8rq"]
 
 [node name="Node2D" type="Node2D"]
 
 [node name="CONSTANTS" parent="." instance=ExtResource("1_12y3w")]
 unique_name_in_owner = true
-
-[node name="CaveTileTyper" parent="." instance=ExtResource("2_hlvmc")]
 
 [node name="Player" parent="." instance=ExtResource("2_0ef6t")]
 unique_name_in_owner = true

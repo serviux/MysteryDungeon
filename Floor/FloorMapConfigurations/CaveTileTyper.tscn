@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://c7dyijufflf32"]
-
-[ext_resource type="Script" path="res://Floor/FloorMapConfigurations/CaveTileTyper.gd" id="1_n727k"]
-
-[node name="CaveTileTyper" type="Node2D"]
-script = ExtResource("1_n727k")
