@@ -17,3 +17,11 @@ enum DIRECTION {
 	WEST,
 	NORTH_WEST
 }
+
+enum TILE_IDX {
+	GROUND = 0, 
+	WALL = 1,
+	FLUID = 2,
+	ITEM = 3,
+	TRAP = 4
+}

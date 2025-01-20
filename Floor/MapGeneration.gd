@@ -1,6 +1,8 @@
 class_name Map
-extends TileMapLayer
+extends Node
 
+
+const DEFAULT_FLOOR = preload("res://Floor/FloorScene.tscn")
 @export var width:int
 @export var height:int
 
@@ -21,7 +23,8 @@ var pseudo_random
 var spawnable_coords_x = {}
 var spawnable_coords_y = {}
 var player:Player
-
+var floor
+var layers
 
 
 signal start_point_set(start_position:Vector2i)
@@ -29,6 +32,9 @@ signal start_point_set(start_position:Vector2i)
 
 ##sets the seed for the pseudo-random number generator by getting a hashing the current system time or the provided seed string from user
 func _ready():
+	floor = DEFAULT_FLOOR.instantiate()
+	add_child(floor)
+	layers = floor.get_children()
 	pseudo_random = RandomNumberGenerator.new()
 	if use_random_seed:
 		var seed_string = Time.get_datetime_string_from_system()
@@ -56,10 +62,10 @@ func generate_map():
 	_fill_tiles()
 	
 	#set stairs to next floor
-	_set_end_point()
+	#_set_end_point()
 	
 	
-	set_start_point()
+	#set_start_point()
 	
 		
 func _random_fill():      
@@ -73,7 +79,7 @@ func _random_fill():
 
 
 func _fill_tiles():
-	var start_pos = local_to_map(Vector2.ZERO)
+	var start_pos = layers[0].local_to_map(Vector2.ZERO)
 	for x in width:
 		for y in height:
 			var tile_idx = map[x][y]
@@ -84,9 +90,14 @@ func _fill_tiles():
 				tile_type = CONSTANTS.WALL
 				
 			var coords = Vector2i(start_pos.x + x, start_pos.y + y)
-			set_cell()
-			set_cell(0, coords, 0, tile_type )
-
+			
+			match tile_type:
+				CONSTANTS.GROUND:
+					layers[CONSTANTS.TILE_IDX.GROUND].set_cell(0,coords,0,tile_type)
+				CONSTANTS.WALL:
+					layers[CONSTANTS.TILE_IDX.WALL].set_cell(0,coords,0,tile_type)
+				CONSTANTS.FLUID:
+					layers[CONSTANTS.TILE_IDX.FLUID].set_cell(0,coords,0,tile_type)
 
 func _set_end_point():
 	print("setting end point to.....")
@@ -98,7 +109,9 @@ func _set_end_point():
 		end_pos.y = randi_range(0,map_max.y -1)
 	
 	print("Endpoint(x: %s, y: %s)" %[end_pos.x, end_pos.y])
-	set_cell(0, end_pos,0, CONSTANTS.STAIRS)
+	
+	var ground_layer = layers[CONSTANTS.TILE_IDX.GROUND]
+	ground_layer.set_cell(0, end_pos,0, CONSTANTS.STAIRS)
 	
 
 func set_start_point(forced_position:Vector2i = Vector2i(-1,-1)):
@@ -116,7 +129,9 @@ func set_start_point(forced_position:Vector2i = Vector2i(-1,-1)):
 		start_pos.x = randi_range(0,map_max.x -1)
 		start_pos.y = randi_range(0,map_max.y -1)
 	
-	var world_pos = map_to_local(start_pos)
+	
+	var ground_layer = layers[CONSTANTS.TILE_IDX.GROUND]
+	var world_pos = ground_layer.map_to_local(start_pos)
 	print("Map Startpoint(x: %s, y: %s) World Startpoint (x: %s, y: %s)" %[start_pos.x, start_pos.y, world_pos.x, world_pos.y])
 	start_point_set.emit(world_pos)
 
@@ -156,17 +171,3 @@ func get_surrounding_tiles_count(map_x:int, map_y:int) -> int:
 			else:
 				wall_count += 1
 	return wall_count
-	
-
-func get_entity_position(world_position:Vector2):
-	"""Gets the position of an entity in terms of map coordinates
-	world_position - the position of the entity in the world 
-	returns -   Vector2i coordinates of map position"""
-	return local_to_map(world_position)
-
-
-func get_world_position(map_position:Vector2i):
-	"""Gets the position of an entity in terms of global coordinates
-	map_position - Vector2i coordinates of map position" 
-	returns -   the position of the entity in the world"""
-	return map_to_local(map_position)
