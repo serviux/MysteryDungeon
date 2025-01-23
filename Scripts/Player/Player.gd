@@ -12,7 +12,7 @@ func _ready() -> void:
 
 
 func _physics_process(delta):
-	_movement()
+	_test_movement(delta)
 	
 	
 func _movement():
@@ -35,6 +35,16 @@ func _movement():
 	if(Input.is_action_just_pressed("move_up")):
 		move.emit(CONSTANTS.DIRECTION.NORTH)
 
+
+func _test_movement(delta):
+	if(Input.is_action_pressed("move_right")):
+		position.x += SPEED * delta
+	if(Input.is_action_pressed("move_left")):
+		position.x -= SPEED * delta
+	if(Input.is_action_pressed("move_down")):
+		position.y += SPEED * delta
+	if(Input.is_action_pressed("move_up")):
+		position.y -= SPEED * delta
 
 func _on_start_point_set(pos:Vector2i):
 	position = pos

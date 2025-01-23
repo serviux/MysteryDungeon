@@ -11,8 +11,8 @@ unique_name_in_owner = true
 
 [node name="Player" parent="." instance=ExtResource("2_0ef6t")]
 unique_name_in_owner = true
+z_index = 10
 
-[node name="MapGen" type="Node" parent="."]
+[node name="MapGen" type="Node2D" parent="."]
 script = ExtResource("4_cd8rq")
-width = 100
-height = 100
+fill_percent = 50

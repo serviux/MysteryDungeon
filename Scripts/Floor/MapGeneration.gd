@@ -1,10 +1,10 @@
 class_name Map
-extends Node
+extends Node2D
 
 
 const DEFAULT_FLOOR = preload("res://Scenes/Floor/FloorScene.tscn")
-@export var width:int
-@export var height:int
+@export var width:int = 50
+@export var height:int = 50
 
 @export var fill_percent:int = 60
 @export var smooth_iterations:int = 5
@@ -20,11 +20,12 @@ var mesh_generator
 var map = []
 var pseudo_random
 
-var spawnable_coords_x = {}
-var spawnable_coords_y = {}
+var walkable_coords:Array = []
 var player:Player
 var floor
 var layers
+
+
 
 
 signal start_point_set(start_position:Vector2i)
@@ -59,23 +60,34 @@ func generate_map():
 	for x in smooth_iterations:
 		smooth_map()
 	
-	_fill_tiles()
+	_fill_border()
 	
+	_fill_tiles()
 	#set stairs to next floor
 	#_set_end_point()
 	
 	
-	#set_start_point()
+	set_start_point()
 	
 		
 func _random_fill():      
 	for x in width:
 		map.append([])
 		for y in height:
-			if(x == 0 or x == width - 1 or y == 0 or y == height - 1):
+			if(pseudo_random.randi_range(0,100) < self.fill_percent):
 				map[x].append(1)
 			else:
-				map[x].append(1 if pseudo_random.randi_range(0,100) < self.fill_percent else 0 )
+				map[x].append(0)
+				var coords = Vector2i(x,y)
+				if(x > 0 and x < width - 1 and y > 0 and y < height - 1):
+					walkable_coords.append(coords)
+			map[x].append(1 if pseudo_random.randi_range(0,100) < self.fill_percent else 0 )
+
+func _fill_border():
+	for x in width:
+		for y in height:
+			if(x == 0 or x == width - 1 or y == 0 or y == height - 1):
+				map[x][y] = 1
 
 
 func _fill_tiles():
@@ -116,29 +128,36 @@ func _set_end_point():
 
 func set_start_point(forced_position:Vector2i = Vector2i(-1,-1)):
 	print("setting start point to.....")
-	start_pos.x = randi_range(0,map_max.x -1)
-	start_pos.y = randi_range(0,map_max.y -1)
+
+	var world_pos
+	var ground_layer = layers[CONSTANTS.TILE_IDX.GROUND]
 	
 	if forced_position > Vector2i.ZERO:
 		print("setting forced position: x: %s, y: %s" %[forced_position.x, forced_position.y])
+		world_pos = ground_layer.map_to_local(start_pos)
 		start_pos = forced_position
-		start_point_set.emit(start_pos)
+		start_point_set.emit(world_pos)
 		return
 	
-	while map[start_pos.x][start_pos.y] != 0 or start_pos == end_pos:
-		start_pos.x = randi_range(0,map_max.x -1)
-		start_pos.y = randi_range(0,map_max.y -1)
+	var spawn = _get_random_point()
 	
 	
-	var ground_layer = layers[CONSTANTS.TILE_IDX.GROUND]
-	var world_pos = ground_layer.map_to_local(start_pos)
+	world_pos = ground_layer.map_to_local(start_pos)
 	print("Map Startpoint(x: %s, y: %s) World Startpoint (x: %s, y: %s)" %[start_pos.x, start_pos.y, world_pos.x, world_pos.y])
+	world_pos = to_global(world_pos)
 	start_point_set.emit(world_pos)
 
-func _get_random_point(): 
+func _get_random_point(walkable=true) -> Vector2i: 
 	var random_point = Vector2i(-1,-1)
-	
-	map.pick_random()
+	if(walkable):
+		random_point = walkable_coords.pick_random()
+	else: 
+		var map_rand_x =  pseudo_random.randi_range(1,width-1)
+		var map_rand_y = pseudo_random.randi_range(1,height-1)
+		
+		random_point = Vector2i(map_rand_x, map_rand_y)
+		
+	return random_point
 	
 
 
