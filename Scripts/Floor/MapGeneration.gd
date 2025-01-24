@@ -74,14 +74,15 @@ func _random_fill():
 	for x in width:
 		map.append([])
 		for y in height:
-			if(pseudo_random.randi_range(0,100) < self.fill_percent):
+			var is_ground_tile = pseudo_random.randi_range(0,100) < self.fill_percent
+			if(is_ground_tile):
 				map[x].append(1)
+				var coords = Vector2i(x,y)
+				if(x > 0 and x < width - 1 and y > 0 and y < height - 1) and is_ground_tile:
+					walkable_coords.append(coords)
 			else:
 				map[x].append(0)
-				var coords = Vector2i(x,y)
-				if(x > 0 and x < width - 1 and y > 0 and y < height - 1):
-					walkable_coords.append(coords)
-			map[x].append(1 if pseudo_random.randi_range(0,100) < self.fill_percent else 0 )
+				
 
 func _fill_border():
 	for x in width:
@@ -133,6 +134,7 @@ func set_start_point(forced_position:Vector2i = Vector2i(-1,-1)):
 	var ground_layer = layers[CONSTANTS.TILE_IDX.GROUND]
 	
 	if forced_position > Vector2i.ZERO:
+		world_pos = forced_position
 		print("setting forced position: x: %s, y: %s" %[forced_position.x, forced_position.y])
 		world_pos = ground_layer.map_to_local(start_pos)
 		start_pos = forced_position
@@ -141,10 +143,12 @@ func set_start_point(forced_position:Vector2i = Vector2i(-1,-1)):
 	
 	var spawn = _get_random_point()
 	
-	
-	world_pos = ground_layer.map_to_local(start_pos)
-	print("Map Startpoint(x: %s, y: %s) World Startpoint (x: %s, y: %s)" %[start_pos.x, start_pos.y, world_pos.x, world_pos.y])
+	world_pos = spawn
+	world_pos = ground_layer.map_to_local(world_pos)
+	print("Map Startpoint(x: %s, y: %s) World Startpoint (x: %s, y: %s)" %[spawn.x, spawn.y, world_pos.x, world_pos.y])
 	world_pos = to_global(world_pos)
+	
+	
 	start_point_set.emit(world_pos)
 
 func _get_random_point(walkable=true) -> Vector2i: 
