@@ -75,7 +75,8 @@ func generate_map():
 
 #region MAP_GENERATION
 
-func _random_fill():      
+func _random_fill():
+	"""fills a map of length x,y with random tiles based on a fill percentage"""   
 	for x in width:
 		map.append([])
 		for y in height:
@@ -87,6 +88,7 @@ func _random_fill():
 				
 
 func _fill_border():
+	"""fills the edges of the map with walls"""
 	for x in width:
 		for y in height:
 			if(x == 0 or x == width - 1 or y == 0 or y == height - 1):
@@ -94,6 +96,7 @@ func _fill_border():
 
 
 func _find_ground_tiles():
+	"""searches the map for ground tiles, and appends them to the walkable coords member"""
 	for x in width:
 		for y in height:
 			if(map[x][y] == CONSTANTS.TILE_IDX.GROUND):
@@ -101,6 +104,9 @@ func _find_ground_tiles():
 				walkable_coords.append(coords)
 
 func _fill_tiles():
+	"""
+	fills the respective tiles based off the map the corrosponding type in the map
+	"""
 	start_pos = tile_map_layers[0].local_to_map(Vector2.ZERO)
 	for x in width:
 		for y in height:
@@ -122,19 +128,30 @@ func _fill_tiles():
 					tile_map_layers[CONSTANTS.TILE_IDX.FLUID].set_cell(coords,0,CONSTANTS.FLUID,0)
 
 func _set_end_point():
+	"""
+	sets the goal to reach the next floor on the map
+	"""
 	print("setting end point to.....")
 	
 	end_pos = _get_random_point()
 	map[end_pos.x][end_pos.y] = CONSTANTS.TILE_IDX.TRAP
 	
-	print("Endpoint(x: %s, y: %s)" %[end_pos.x, end_pos.y])
 	
 	var trap_layer = tile_map_layers[CONSTANTS.TILE_IDX.TRAP]
+	var world_pos = to_global(trap_layer.map_to_local(end_pos))
+	print("Endpoint(x: %s, y: %s)  World Position: (x: %s, y: %s)" %[end_pos.x, end_pos.y, world_pos.x, world_pos.y])
+	
 	trap_layer.set_cell(end_pos,0, CONSTANTS.STAIRS, 0)
 	print("it worked")
 	
 
 func set_start_point(forced_position:Vector2i = Vector2i(-1,-1)):
+	"""
+	sets the point the player spawns on this floor
+	Parameters
+	----------
+	forced_position			Vector2i  coordinates of the map to force player spawn
+	"""
 	print("setting start point to.....")
 
 	var world_pos
@@ -158,9 +175,15 @@ func set_start_point(forced_position:Vector2i = Vector2i(-1,-1)):
 	
 	start_point_set.emit(world_pos)
 
-func _get_random_point(walkable=true) -> Vector2i: 
+func _get_random_point(is_on_ground_tile=true) -> Vector2i:
+	"""
+	gets a random point from the map 
+	Parameters
+	----------
+	is_on_ground_tile	boolean 	determines if the tile should be sampled from the ground tiles without replacement 
+	"""
 	var random_point = Vector2i(-1,-1)
-	if(walkable):
+	if(is_on_ground_tile):
 		var walk_rand_idx = pseudo_random.randi_range(0, len(walkable_coords))
 		random_point = walkable_coords.pop_at(walk_rand_idx)
 	else: 
@@ -174,6 +197,9 @@ func _get_random_point(walkable=true) -> Vector2i:
 
 
 func smooth_map():
+	"""
+	Performs cellular automata to smooth the map for a number of iterations. 
+	"""
 	var map_copy = map.duplicate(true)
 	for x in range(len(map_copy)):
 		for y in range(len(map_copy[x])):
@@ -188,6 +214,13 @@ func smooth_map():
 
 			
 func get_surrounding_tiles_count(map_x:int, map_y:int) -> int: 
+	"""
+		gets the count of the suround tiles from map coords (x,y)
+		Parameters
+		----------
+		map_x	int		x coordinate of the map to analyze
+		map_y 	int		y coordinate of the map to analyze
+	"""
 	var wall_count = 0
 	
 	#range goes from start to n-1, therefore, to get the tiles that are greater than the center
