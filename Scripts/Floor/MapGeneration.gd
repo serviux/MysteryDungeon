@@ -22,8 +22,8 @@ var pseudo_random
 
 var walkable_coords:Array = []
 var player:Player
-var floor
-var layers
+var tile_map
+var tile_map_layers
 
 
 
@@ -33,9 +33,9 @@ signal start_point_set(start_position:Vector2i)
 
 ##sets the seed for the pseudo-random number generator by getting a hashing the current system time or the provided seed string from user
 func _ready():
-	floor = DEFAULT_FLOOR.instantiate()
-	add_child(floor)
-	layers = floor.get_children()
+	tile_map = DEFAULT_FLOOR.instantiate()
+	add_child(tile_map)
+	tile_map_layers = tile_map.get_children()
 	pseudo_random = RandomNumberGenerator.new()
 	if use_random_seed:
 		var seed_string = Time.get_datetime_string_from_system()
@@ -63,7 +63,6 @@ func generate_map():
 	_fill_border()
 	
 	_fill_tiles()
-	#set stairs to next floor
 	
 	_find_ground_tiles()
 
@@ -102,7 +101,7 @@ func _find_ground_tiles():
 				walkable_coords.append(coords)
 
 func _fill_tiles():
-	var start_pos = layers[0].local_to_map(Vector2.ZERO)
+	start_pos = tile_map_layers[0].local_to_map(Vector2.ZERO)
 	for x in width:
 		for y in height:
 			var tile_idx = map[x][y]
@@ -116,29 +115,30 @@ func _fill_tiles():
 			
 			match tile_type:
 				CONSTANTS.GROUND:
-					layers[CONSTANTS.TILE_IDX.GROUND].set_cell(coords,0,tile_type,0)
+					tile_map_layers[CONSTANTS.TILE_IDX.GROUND].set_cell(coords,0,CONSTANTS.GROUND,0)
 				CONSTANTS.WALL:
-					layers[CONSTANTS.TILE_IDX.WALL].set_cell(coords,0,tile_type,0)
+					tile_map_layers[CONSTANTS.TILE_IDX.WALL].set_cell(coords,0,CONSTANTS.WALL,0)
 				CONSTANTS.FLUID:
-					layers[CONSTANTS.TILE_IDX.FLUID].set_cell(coords,0,tile_type,0)
+					tile_map_layers[CONSTANTS.TILE_IDX.FLUID].set_cell(coords,0,CONSTANTS.FLUID,0)
 
 func _set_end_point():
 	print("setting end point to.....")
 	
-	var end_pos = _get_random_point()
+	end_pos = _get_random_point()
 	map[end_pos.x][end_pos.y] = CONSTANTS.TILE_IDX.TRAP
 	
 	print("Endpoint(x: %s, y: %s)" %[end_pos.x, end_pos.y])
 	
-	var trap_layer = layers[CONSTANTS.TILE_IDX.TRAP]
+	var trap_layer = tile_map_layers[CONSTANTS.TILE_IDX.TRAP]
 	trap_layer.set_cell(end_pos,0, CONSTANTS.STAIRS, 0)
+	print("it worked")
 	
 
 func set_start_point(forced_position:Vector2i = Vector2i(-1,-1)):
 	print("setting start point to.....")
 
 	var world_pos
-	var ground_layer = layers[CONSTANTS.TILE_IDX.GROUND]
+	var ground_layer = tile_map_layers[CONSTANTS.TILE_IDX.GROUND]
 	
 	if forced_position > Vector2i.ZERO:
 		world_pos = forced_position

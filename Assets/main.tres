@@ -12,4 +12,5 @@ texture_region_size = Vector2i(32, 32)
 2:0/0 = 0
 
 [resource]
+tile_size = Vector2i(32, 32)
 sources/0 = SubResource("TileSetAtlasSource_piej5")
