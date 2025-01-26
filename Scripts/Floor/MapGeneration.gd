@@ -64,24 +64,27 @@ func generate_map():
 	
 	_fill_tiles()
 	#set stairs to next floor
-	#_set_end_point()
+	
+	_find_ground_tiles()
+
 	
 	
 	set_start_point()
-	
-		
+	_set_end_point()
+
+
+
+#region MAP_GENERATION
+
 func _random_fill():      
 	for x in width:
 		map.append([])
 		for y in height:
 			var is_ground_tile = pseudo_random.randi_range(0,100) < self.fill_percent
 			if(is_ground_tile):
-				map[x].append(1)
-				var coords = Vector2i(x,y)
-				if(x > 0 and x < width - 1 and y > 0 and y < height - 1) and is_ground_tile:
-					walkable_coords.append(coords)
+				map[x].append(CONSTANTS.TILE_IDX.GROUND)
 			else:
-				map[x].append(0)
+				map[x].append(CONSTANTS.TILE_IDX.WALL)
 				
 
 func _fill_border():
@@ -91,15 +94,22 @@ func _fill_border():
 				map[x][y] = 1
 
 
+func _find_ground_tiles():
+	for x in width:
+		for y in height:
+			if(map[x][y] == CONSTANTS.TILE_IDX.GROUND):
+				var coords = Vector2i(x,y)
+				walkable_coords.append(coords)
+
 func _fill_tiles():
 	var start_pos = layers[0].local_to_map(Vector2.ZERO)
 	for x in width:
 		for y in height:
 			var tile_idx = map[x][y]
 			var tile_type
-			if(tile_idx == 0):
+			if(tile_idx == CONSTANTS.TILE_IDX.GROUND):
 				tile_type = CONSTANTS.GROUND 
-			elif(tile_idx == 1):
+			elif(tile_idx == CONSTANTS.TILE_IDX.WALL):
 				tile_type = CONSTANTS.WALL
 				
 			var coords = Vector2i(start_pos.x + x, start_pos.y + y)
@@ -114,17 +124,14 @@ func _fill_tiles():
 
 func _set_end_point():
 	print("setting end point to.....")
-	end_pos.x = randi_range(0,map_max.x -1)
-	end_pos.y = randi_range(0,map_max.y -1)
-
-	while map[end_pos.x][end_pos.y] != 0:
-		end_pos.x = randi_range(0,map_max.x -1)
-		end_pos.y = randi_range(0,map_max.y -1)
+	
+	var end_pos = _get_random_point()
+	map[end_pos.x][end_pos.y] = CONSTANTS.TILE_IDX.TRAP
 	
 	print("Endpoint(x: %s, y: %s)" %[end_pos.x, end_pos.y])
 	
-	var ground_layer = layers[CONSTANTS.TILE_IDX.GROUND]
-	ground_layer.set_cell(end_pos,0, CONSTANTS.STAIRS, 0)
+	var trap_layer = layers[CONSTANTS.TILE_IDX.TRAP]
+	trap_layer.set_cell(end_pos,0, CONSTANTS.STAIRS, 0)
 	
 
 func set_start_point(forced_position:Vector2i = Vector2i(-1,-1)):
@@ -154,7 +161,8 @@ func set_start_point(forced_position:Vector2i = Vector2i(-1,-1)):
 func _get_random_point(walkable=true) -> Vector2i: 
 	var random_point = Vector2i(-1,-1)
 	if(walkable):
-		random_point = walkable_coords.pick_random()
+		var walk_rand_idx = pseudo_random.randi_range(0, len(walkable_coords))
+		random_point = walkable_coords.pop_at(walk_rand_idx)
 	else: 
 		var map_rand_x =  pseudo_random.randi_range(1,width-1)
 		var map_rand_y = pseudo_random.randi_range(1,height-1)
@@ -171,9 +179,9 @@ func smooth_map():
 		for y in range(len(map_copy[x])):
 			var neighbor_tiles = get_surrounding_tiles_count(x,y)
 			if(neighbor_tiles > 4):
-				map_copy[x][y] = 1
+				map_copy[x][y] = CONSTANTS.TILE_IDX.WALL
 			elif(neighbor_tiles < 4):
-				map_copy[x][y] = 0
+				map_copy[x][y] = CONSTANTS.TILE_IDX.GROUND
 	
 	map = map_copy
 			
@@ -194,3 +202,10 @@ func get_surrounding_tiles_count(map_x:int, map_y:int) -> int:
 			else:
 				wall_count += 1
 	return wall_count
+#endregion
+
+
+#region ENTITY_SPAWNING
+
+
+#endregion
