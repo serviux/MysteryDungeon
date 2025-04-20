@@ -3,16 +3,18 @@ extends CharacterBody2D
 
 
 const SPEED = 100
-var map_generator:Map
+@onready var map_generator:Map = %MapGen 
 @onready var CONSTANTS:GameConstants = %CONSTANTS
-signal move(Direction)
+signal move(Direction:GameConstants.DIRECTION)
+signal moved(map_coords:Vector2i)
+
 
 func _ready() -> void:
 	pass
 
 
 func _physics_process(delta):
-	_test_movement(delta)
+	_movement()
 	
 	
 func _movement():
@@ -48,3 +50,43 @@ func _test_movement(delta):
 
 func _on_start_point_set(pos:Vector2i):
 	position = pos
+	
+
+func _on_move(Direction: GameConstants.DIRECTION) -> void:
+	#get current position of player on the map 
+	var ground_layer = map_generator.tile_map_layers[CONSTANTS.TILE_IDX.GROUND]
+	var map_pos = ground_layer.local_to_map(position)
+	print("Current Player position x: %s y: %s" %[map_pos.x, map_pos.y] )
+	print("Current Player Direction: %s" %[GameConstants.DIRECTION.keys()[Direction]] )
+	
+	var movement = Vector2i.ZERO
+	
+	match Direction:
+		CONSTANTS.DIRECTION.NORTH:
+			movement = Vector2i(0, -1)
+		CONSTANTS.DIRECTION.NORTH_EAST:
+			movement = Vector2i(1, -1)
+		CONSTANTS.DIRECTION.EAST:
+			movement = Vector2i(1, 0)
+		CONSTANTS.DIRECTION.SOUTH_EAST:
+			movement = Vector2i(1, 1)
+		CONSTANTS.DIRECTION.SOUTH:
+			movement = Vector2i(0,1)
+		CONSTANTS.DIRECTION.SOUTH_WEST:
+			movement = Vector2i(-1, 1)
+		CONSTANTS.DIRECTION.WEST:
+			movement = Vector2i(-1, 0)
+		CONSTANTS.DIRECTION.NORTH_WEST:
+			movement = Vector2i(-1,-1)
+		
+			
+	
+	
+	
+
+func is_tile_walkable(point:Vector2i):
+	var tile = map_generator.map[point.x][point.y]
+	 
+	if tile == CONSTANTS.GROUND: 
+		return true
+	return false 

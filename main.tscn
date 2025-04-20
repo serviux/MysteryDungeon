@@ -14,5 +14,8 @@ unique_name_in_owner = true
 z_index = 10
 
 [node name="MapGen" type="Node2D" parent="."]
+unique_name_in_owner = true
 script = ExtResource("4_cd8rq")
 fill_percent = 50
+
+[connection signal="move" from="Player" to="Player" method="_on_move"]

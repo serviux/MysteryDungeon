@@ -55,19 +55,11 @@ func _ready():
 func generate_map():
 
 	_random_fill()
-	
-	
 	for x in smooth_iterations:
 		smooth_map()
-	
 	_fill_border()
-	
 	_fill_tiles()
-	
 	_find_ground_tiles()
-
-	
-	
 	set_start_point()
 	_set_end_point()
 
