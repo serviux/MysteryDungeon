@@ -95,6 +95,7 @@ func _find_ground_tiles():
 				var coords = Vector2i(x,y)
 				walkable_coords.append(coords)
 
+
 func _fill_tiles():
 	"""
 	fills the respective tiles based off the map the corrosponding type in the map
@@ -185,7 +186,6 @@ func _get_random_point(is_on_ground_tile=true) -> Vector2i:
 		random_point = Vector2i(map_rand_x, map_rand_y)
 		
 	return random_point
-	
 
 
 func smooth_map():
