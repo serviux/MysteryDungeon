@@ -1,2 +1,2 @@
 # MysteryDungeon
-Simple WIP mystery Dungeon game
+A work in progress mysterydungeon game developed in the godot engine.
