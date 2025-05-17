@@ -13,7 +13,7 @@ func _ready() -> void:
 	pass
 
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	_movement()
 	
 func _movement():
@@ -83,13 +83,9 @@ func _on_move(Direction: GameConstants.DIRECTION) -> void:
 	
 	if walkable:
 		var new_pos = ground_layer.map_to_local(movement)
-		print("test")
 		print("Target world position x: %s y: %s" %[new_pos.x, new_pos.y])
 		position = new_pos
 		moved.emit(movement)
-	
-	
-	
 
 func is_tile_walkable(point:Vector2i) -> bool:
 	var tile = map_generator.map[point.x][point.y]

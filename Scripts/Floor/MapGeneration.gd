@@ -3,20 +3,26 @@ extends Node2D
 
 
 const DEFAULT_FLOOR = preload("res://Scenes/Floor/FloorScene.tscn")
+
+@export_category("Map Generation")
 @export var width:int = 50
 @export var height:int = 50
 
 @export var fill_percent:int = 60
-@export var smooth_iterations:int = 5
 @export var map_seed:String
 @export var use_random_seed:bool = true;
+
+@export_category("Map Post Processing")
+@export var smooth_iterations:int = 5
+@export var ground_threshold:int = 20;
+@export var wall_threshold:int = 20;
+
+
+@export_category("Debug properties")
 @export var end_pos:Vector2i 
 @export var start_pos:Vector2i
 
-@export var map_max:Vector2i = Vector2i(100,100)
-
 @onready var CONSTANTS:GameConstants = %CONSTANTS
-var mesh_generator
 var map = []
 var pseudo_random
 
@@ -60,8 +66,10 @@ func generate_map():
 	_fill_border()
 	_fill_tiles()
 	_find_ground_tiles()
+	threshold_regions()
 	set_start_point()
 	_set_end_point()
+	
 
 
 
@@ -220,13 +228,75 @@ func get_surrounding_tiles_count(map_x:int, map_y:int) -> int:
 	for neighbor_x in range(map_x - 1, map_x + 2): 
 		for neighbor_y in range(map_y - 1, map_y + 2):
 			
-			if( neighbor_x >= 0 and neighbor_x < width and 
-				neighbor_y >= 0 and neighbor_y < height):
+			if( is_in_map_range(neighbor_x, neighbor_y)):
 					if(neighbor_x != map_x or neighbor_y != map_y):
 						wall_count += map[neighbor_x][neighbor_y]
 			else:
 				wall_count += 1
 	return wall_count
+	
+func threshold_regions():
+	var wall_regions = get_regions(CONSTANTS.TILE_IDX.WALL)
+	var ground_regions = get_regions(CONSTANTS.TILE_IDX.GROUND)
+	
+	for region in wall_regions:
+		if len(region) < wall_threshold:
+			for coord in region:
+				map[coord.x][coord.y] = CONSTANTS.TILE_IDX.GROUND;
+				
+	for region in ground_regions:
+		if len(region) < wall_threshold:
+			for coord in region:
+				map[coord.x][coord.y] = CONSTANTS.TILE_IDX.WALL;
+
+func get_regions(tile_type):
+	var regions = []
+	var map_flags = []
+	for x in width:
+		map_flags.append([])
+		for y in height:
+			map_flags[x].append(0)
+	
+	for x in width:
+		map.append([])
+		for y in height:
+			if(map_flags[x][y] == 0 and map[x][y] == tile_type):
+				var region = get_region_tiles(x, y)
+				regions.append(region)
+				
+				for coord in region:
+					map_flags[coord.x][coord.y] = 1;
+	
+	return regions
+
+func get_region_tiles(start_x:int, start_y:int):
+	var tiles = []
+	var map_flags = []
+	# initialize an empty map to keep track of which tiles are looked at
+	for x in width:
+		map_flags.append([])
+		for y in height:
+			map_flags[x].append(0)
+	
+	var queue = [];
+	
+	queue.push_front(Vector2i(start_x, start_y))
+	
+	while(len(queue) > 0):
+		var tile:Vector2i = queue.pop_front()
+		tiles.append(tile)
+		
+		for x in range(tile.x - 1, tile.x + 2): 
+			for y in range(tile.y - 1, tile.y + 2):
+				if(is_in_map_range(x,y) and (y==tile.y or x == tile.x)):
+					if(map_flags[x][y] == 0 and map[x][y] == CONSTANTS.TILE_IDX.GROUND):
+						map_flags[x][y] = 1;
+						queue.push_front(Vector2i(x, y))
+	return tiles
+	
+	
+func is_in_map_range(pos_x, pos_y) -> bool:
+	return (pos_x >= 0 and pos_x < width and pos_y >= 0 and pos_y < height)
 #endregion
 
 

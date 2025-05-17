@@ -17,5 +17,7 @@ z_index = 10
 unique_name_in_owner = true
 script = ExtResource("4_cd8rq")
 fill_percent = 50
+ground_threshold = 30
+wall_threshold = 10
 
 [connection signal="move" from="Player" to="Player" method="_on_move"]
