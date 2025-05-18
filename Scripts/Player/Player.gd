@@ -90,6 +90,6 @@ func _on_move(Direction: GameConstants.DIRECTION) -> void:
 func is_tile_walkable(point:Vector2i) -> bool:
 	var tile = map_generator.map[point.x][point.y]
 	 
-	if tile == CONSTANTS.TILE_IDX.GROUND: 
+	if tile == CONSTANTS.TILE_IDX.GROUND or tile == CONSTANTS.TILE_IDX.TRAP: 
 		return true
 	return false 
